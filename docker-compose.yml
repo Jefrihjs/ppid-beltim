@@ -1,0 +1,39 @@
+
+services:
+    laravel.test:
+        build:
+            context: .
+            dockerfile: Dockerfile
+            args:
+                WWWGROUP: '${WWWGROUP:-1000}'
+        ports:
+            - '8081:80'
+        volumes:
+            - '.:/var/www/html'
+        networks:
+            - ppid-network
+        depends_on:
+            - mysql
+    mysql:
+        image: 'mysql/mysql-server:8.0'
+        ports:
+            - '${FORWARD_DB_PORT:-3306}:3306'
+        environment:
+            MYSQL_ROOT_PASSWORD: rootpassword
+            MYSQL_ROOT_HOST: '%'
+            MYSQL_DATABASE: ppid_beltim
+            MYSQL_USER: 'sail'
+            MYSQL_PASSWORD: 'password'
+            MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+        volumes:
+            - 'ppid-mysql:/var/lib/mysql'
+        networks:
+            - ppid-network
+networks:
+    ppid-network:
+        driver: bridge
+volumes:
+    ppid-mysql:
+        driver: local
+    sail-mysql:
+        driver: local
