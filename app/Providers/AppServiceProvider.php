@@ -12,10 +12,10 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        // Kirim data visitor khusus ke file footer
-        View::composer('layouts.footer', function ($view) {
+        // Sesuaikan alamatnya menjadi 'public.partials.footer'
+        View::composer('public.partials.footer', function ($view) {
             $view->with([
-                'todayVisitors' => DB::table('visitors')->where('visit_date', now()->format('Y-m-d'))->count(),
+                'todayVisitors' => DB::table('visitors')->whereDate('visit_date', now()->today())->count(),
                 'totalVisitors' => DB::table('visitors')->count(),
             ]);
         });

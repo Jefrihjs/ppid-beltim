@@ -1,6 +1,35 @@
 @extends('layouts.admin')
 
 @section('content')
+{{-- 1.CSS TOM SELECT --}}
+<link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.css" rel="stylesheet">
+<style>
+    
+    .ts-wrapper .ts-control input::placeholder {
+        color: #475569 !important; /* Slate-600 */
+        opacity: 1 !important;
+        font-weight: 700 !important;
+    }
+
+    
+    #select-category-ts-control input {
+        opacity: 1 !important;
+        display: block !important;
+        color: #475569 !important;
+    }
+
+    
+    .ts-control {
+        border: none !important;
+        padding: 1rem 1.5rem !important;
+        background-color: #f8fafc !important; 
+        border-radius: 1rem !important;
+        box-shadow: 0 0 0 1px #e2e8f0 !important;
+        color: #1e293b !important; 
+        font-weight: 700 !important;
+    }
+</style>
+
 <div class="p-8 max-w-4xl mx-auto">
     {{-- Header Form --}}
     <div class="flex items-center gap-4 mb-8">
@@ -25,40 +54,39 @@
                        class="w-full px-6 py-4 bg-slate-50 border-none ring-1 ring-slate-100 rounded-2xl focus:ring-2 focus:ring-amber-500 font-bold text-slate-700 transition-all">
             </div>
 
-            {{-- Jenis Informasi (Dropdown) --}}
+            {{-- Jenis Informasi --}}
             <div>
                 <label class="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Jenis Informasi</label>
-                <select name="category" required class="w-full px-6 py-4 bg-slate-50 border-none ring-1 ring-slate-100 rounded-2xl focus:ring-2 focus:ring-amber-500 font-bold text-slate-700">
+                <select id="select-category" name="category" required placeholder="Pilih Jenis Informasi...">
+                    <option value="">-- Pilih Jenis --</option>
                     <option value="berkala">BERKALA</option>
                     <option value="serta merta">SERTA MERTA</option>
                     <option value="setiap saat">SETIAP SAAT</option>
+                    <option value="dikecualikan">DIKECUALIKAN</option>
                 </select>
             </div>
 
-            {{-- Sub-Judul / Kelompok (id_kel) --}}
+            {{-- Sub-Judul / Kelompok (PAKAI TOM SELECT) --}}
             <div>
                 <label class="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Pilih Sub-Judul (Kelompok)</label>
-                <select name="id_kel" required class="w-full px-6 py-4 bg-slate-50 border-none ring-1 ring-slate-100 rounded-2xl focus:ring-2 focus:ring-amber-500 font-bold text-slate-700">
-                    <option value="">-- Pilih Kelompok Informasi --</option>
-                    @foreach($sub_juduls as $sub)
-                        {{-- Logika untuk menandai pilihan yang sudah tersimpan sebelumnya --}}
-                        <option value="{{ $sub->id }}" {{ (isset($info) && $info->id_kel == $sub->id) ? 'selected' : '' }}>
-                            {{ $sub->name }}
-                        </option>
+                <select id="select-sub-judul" name="id_kel" placeholder="Cari atau pilih kelompok...">
+                    <option value="">-- Silahkan Pilih Kelompok Informasi --</option>
+                    @foreach($sub_juduls as $cat)
+                        <option value="{{ $cat->id }}">{{ $cat->name }}</option>
                     @endforeach
                 </select>
-                <p class="mt-2 text-[10px] text-slate-400">*Ini akan menentukan di kelompok mana informasi ini muncul (seperti di gambar 1)</p>
             </div>
 
             {{-- Nama OPD --}}
-            <select name="opd_name" required class="w-full px-6 py-4 bg-slate-50 border-none ring-1 ring-slate-100 rounded-2xl focus:ring-2 focus:ring-amber-500 font-bold text-slate-700">
-                <option value="">-- Pilih OPD --</option>
-                @foreach($opds as $opd)
-                    <option value="{{ $opd->nama_opd }}" {{ (isset($info) && $info->opd_name == $opd->nama_opd) ? 'selected' : '' }}>
-                        {{ $opd->nama_opd }}
-                    </option>
-                @endforeach
-            </select>
+            <div>
+                <label class="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Unit Kerja / OPD</label>
+                <select id="select-opd" name="opd_name" required placeholder="Cari Nama Dinas/OPD...">
+                    <option value="">-- Pilih Unit Kerja --</option>
+                    @foreach($opds as $opd)
+                        <option value="{{ $opd->nama_opd }}">{{ $opd->nama_opd }}</option>
+                    @endforeach
+                </select>
+            </div>
 
             {{-- Link File --}}
             <div>
@@ -67,10 +95,9 @@
                        class="w-full px-6 py-4 bg-slate-50 border-none ring-1 ring-slate-100 rounded-2xl focus:ring-2 focus:ring-amber-500 font-bold text-slate-700">
             </div>
 
-            {{-- Status & Kelompok (Hidden/Default) --}}
+            {{-- Hidden Inputs --}}
             <input type="hidden" name="kelompok" value="utama">
             <input type="hidden" name="is_active" value="1">
-
         </div>
 
         {{-- Tombol Simpan --}}
@@ -82,4 +109,49 @@
         </div>
     </form>
 </div>
+
+{{-- 2.JS TOM SELECT --}}
+<script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
+<script>
+    // 1. Tom Select untuk Jenis Informasi
+    new TomSelect("#select-category", {
+        create: false,
+        placeholder: "PILIH JENIS INFORMASI...", 
+        
+        render: {
+            item: function(data, escape) {
+                return `<div class="font-bold text-slate-800 uppercase text-xs tracking-widest">${escape(data.text)}</div>`;
+            },
+            option: function(data, escape) {
+                return `<div class="py-3 px-4 border-b border-slate-50 font-bold text-slate-700 uppercase text-xs tracking-widest hover:bg-slate-50">${escape(data.text)}</div>`;
+            }
+        }
+    });
+
+    // 2. Tom Select untuk Sub-Judul (Kelompok)
+    new TomSelect("#select-sub-judul", {
+        create: false,
+        sortField: { field: "text", direction: "asc" },
+        render: {
+            option: function(data, escape) {
+                return `<div class="py-3 px-4 border-b border-slate-50">
+                            <div class="text-sm font-bold text-slate-700 leading-snug">${escape(data.text)}</div>
+                        </div>`;
+            }
+        }
+    });
+
+    // 3. Tom Select untuk Unit Kerja / OPD
+    new TomSelect("#select-opd", {
+        create: false,
+        sortField: { field: "text", direction: "asc" },
+        render: {
+            option: function(data, escape) {
+                return `<div class="py-3 px-4 border-b border-slate-50">
+                            <div class="text-sm font-bold text-slate-700">${escape(data.text)}</div>
+                        </div>`;
+            }
+        }
+    });
+</script>
 @endsection

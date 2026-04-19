@@ -10,27 +10,24 @@ class InformationController extends Controller
 {
     public function index(Request $request)
     {
-        // 1. Ambil data dasar
+        // 1. JANGAN filter berdasarkan category di sini agar semua tab terisi
         $query = PublicInformation::where('is_active', true);
 
-        // 2. Filter berdasarkan parameter URL
+        // Filter Kelompok (Utama/Pembantu) tetap dipertahankan karena ini beda halaman
         if ($request->filled('kelompok')) {
             $query->where('kelompok', $request->kelompok);
         }
 
-        if ($request->filled('category')) {
-            $query->where('category', $request->category);
-        }
-
+        // Filter Search tetap di level DB agar ringan
         if ($request->filled('search')) {
             $query->where('title', 'like', '%' . $request->search . '%');
         }
 
-        // 3. Ambil data dan kelompokkan
-        // Kita pakai get() dulu baru groupBy di level Collection (lebih aman)
-        $informations = $query->get()->groupBy('id_kel');
+        // 2. Ambil SEMUA data informasi (Berkala, Setiap Saat, Serta Merta, Dikecualikan)
+        // Dengan begini, variabel $informations akan berisi data untuk SEMUA tab
+        $informations = $query->get(); 
 
-        // 4. Kirim ke View
+        // 3. Kirim ke View
         return view('public.informasi.index', compact('informations'));
     }
 

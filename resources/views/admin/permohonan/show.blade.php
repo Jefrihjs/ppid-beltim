@@ -1,151 +1,187 @@
 @extends('layouts.admin')
 
 @section('content')
-<section class="py-6 px-4">
-    <div class="flex items-center gap-2 text-xs font-bold text-blue-600 mb-6 uppercase tracking-widest">
-        <a href="{{ route('admin.dashboard') }}">Beranda</a>
-        <span class="text-slate-300">/</span>
-        <a href="{{ route('admin.permohonan.index') }}">Permohonan Informasi</a>
-        <span class="text-slate-300">/</span>
-        <span class="text-slate-400">Detail Permohonan</span>
+{{-- PEMBUNGKUS UTAMA (Satu x-data saja untuk seluruh halaman) --}}
+<div class="p-6" x-data="{ openPemberitahuan: false, openTidakLengkap: false, openUploadSelesai: false }">
+    
+    {{-- 1. HEADER --}}
+    <div class="flex justify-between items-center mb-8">
+        <div>
+            <h1 class="text-2xl font-black text-slate-800">Detil Permohonan Informasi</h1>
+            <p class="text-slate-500 text-sm font-medium">Kelola dan tindak lanjuti permintaan informasi publik secara transparan.</p>
+        </div>
+        <a href="{{ route('admin.permohonan.index') }}" class="bg-white border border-slate-200 text-slate-600 px-5 py-2.5 rounded-2xl font-bold hover:bg-slate-50 transition-all text-sm shadow-sm">
+            &larr; Kembali
+        </a>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
-        {{-- KOLOM KIRI: DATA PERMOHONAN --}}
-        <div class="lg:col-span-2 space-y-6">
-            <div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
-                <div class="p-6 border-b border-slate-50 bg-slate-50/50">
-                    <h2 class="text-lg font-bold text-slate-800">Detail Permohonan Informasi</h2>
+        {{-- KOLOM KIRI: INFORMASI DATA --}}
+        <div class="lg:col-span-2 space-y-8">
+            <div class="bg-white rounded-[2.5rem] shadow-sm border border-slate-100 overflow-hidden">
+                <div class="bg-slate-900 px-10 py-5 flex justify-between items-center">
+                    <span class="text-slate-400 font-black tracking-[0.2em] text-[10px] uppercase">Data Identitas Pemohon</span>
+                    <span class="px-4 py-1.5 {{ $permohonan->status == 'pending' ? 'bg-amber-500' : 'bg-emerald-500' }} text-white text-[10px] font-black rounded-full uppercase tracking-widest shadow-lg shadow-black/20">
+                        {{ str_replace('_', ' ', strtoupper($permohonan->status)) }}
+                    </span>
                 </div>
                 
-                <div class="p-8">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-y-1">
-                        {{-- Row Item --}}
-                        <div class="py-3 px-2 text-sm font-bold text-slate-700">Kode Permohonan</div>
-                        <div class="py-3 px-2 md:col-span-2 text-sm text-slate-600 flex items-center gap-2">
-                            {{ $permohonan->nomor_registrasi }} 
-                            <span class="bg-blue-500 text-white text-[10px] px-2 py-0.5 rounded-full uppercase">baru</span>
+                <div class="p-12 space-y-10">
+                    {{-- Loop data identitas kamu tetap sama seperti sebelumnya --}}
+                    @php
+                        $infoFields = [
+                            'Kode Permohonan' => ['val' => $permohonan->kode_tracking, 'class' => 'font-mono font-black text-blue-600 tracking-wider text-lg'],
+                            'Nomor Pendaftaran' => ['val' => $permohonan->nomor_registrasi, 'class' => 'font-black text-slate-800'],
+                            'Nama Lengkap Pemohon' => ['val' => $permohonan->nama . ' (' . strtoupper($permohonan->kategori_pemohon) . ')', 'class' => 'font-black text-slate-900 text-xl tracking-tight'],
+                            'NIK / No. Identitas' => ['val' => $permohonan->nik, 'class' => 'font-bold text-slate-700'],
+                            'Alamat Domisili' => ['val' => $permohonan->alamat, 'class' => 'font-semibold text-slate-600 italic leading-relaxed bg-slate-50 p-5 rounded-2xl border border-slate-100'],
+                            'Kontak' => ['val' => $permohonan->email . ' / ' . $permohonan->no_hp, 'class' => 'font-bold text-slate-700'],
+                        ];
+                    @endphp
+
+                    @foreach($infoFields as $label => $data)
+                        <div class="w-full pb-8 border-b border-slate-50 last:border-0 last:pb-0">
+                            <label class="block text-[11px] font-black text-slate-400 uppercase tracking-[0.25em] mb-3">{{ $label }}</label>
+                            <div class="{{ $data['class'] }}">{{ $data['val'] }}</div>
                         </div>
+                    @endforeach
+                </div>
+            </div>
 
-                        <div class="py-3 px-2 text-sm font-bold text-slate-700 bg-slate-50">Nomor Pendaftaran</div>
-                        <div class="py-3 px-2 md:col-span-2 text-sm text-slate-600 bg-slate-50 font-mono">001/PPID/IV/2026</div>
-
-                        <div class="py-3 px-2 text-sm font-bold text-slate-700">Kategori Pemohon</div>
-                        <div class="py-3 px-2 md:col-span-2 text-sm text-slate-600 uppercase">{{ $permohonan->kategori_pemohon }}</div>
-
-                        <div class="py-3 px-2 text-sm font-bold text-slate-700">Nama Lengkap</div>
-                        <div class="py-3 px-2 md:col-span-2 text-sm text-slate-600">{{ $permohonan->nama }}</div>
-
-                        <div class="py-3 px-2 text-sm font-bold text-slate-700">Alamat</div>
-                        <div class="py-3 px-2 md:col-span-2 text-sm text-slate-600">{{ $permohonan->alamat }}</div>
-
-                        <div class="py-3 px-2 text-sm font-bold text-slate-700 font-mono">NIK</div>
-                        <div class="py-3 px-2 md:col-span-2 text-sm text-slate-600">{{ $permohonan->nik }}</div>
-
-                        <div class="py-3 px-2 text-sm font-bold text-slate-700">Nomor Ponsel</div>
-                        <div class="py-3 px-2 md:col-span-2 text-sm text-slate-600">{{ $permohonan->no_hp }}</div>
-
-                        <div class="py-3 px-2 text-sm font-bold text-slate-700 italic">e-Mail</div>
-                        <div class="py-3 px-2 md:col-span-2 text-sm text-blue-500 underline">{{ $permohonan->email }}</div>
-
-                        <div class="py-3 px-2 text-sm font-bold text-slate-700 border-t border-slate-50 mt-4 pt-6">Rincian Informasi</div>
-                        <div class="py-3 px-2 md:col-span-2 text-sm text-slate-600 border-t border-slate-50 mt-4 pt-6 italic">"{{ $permohonan->rincian_informasi }}"</div>
-
-                        <div class="py-3 px-2 text-sm font-bold text-slate-700">Tujuan Penggunaan</div>
-                        <div class="py-3 px-2 md:col-span-2 text-sm text-slate-600">{{ $permohonan->tujuan_penggunaan }}</div>
-
-                        {{-- Section Cara Memperoleh --}}
-                        <div class="py-6 px-2 md:col-span-3">
-                            <div class="grid grid-cols-2 gap-4">
-                                <div>
-                                    <p class="text-xs font-bold text-slate-800 mb-3">Cara Memperoleh Informasi</p>
-                                    <div class="space-y-2 text-xs">
-                                        <label class="flex items-center gap-2">
-                                            <input type="radio" {{ $permohonan->cara_memperoleh == 'melihat' ? 'checked' : '' }} disabled class="text-blue-500"> Melihat
-                                        </label>
-                                        <label class="flex items-center gap-2">
-                                            <input type="radio" {{ $permohonan->cara_memperoleh == 'membaca' ? 'checked' : '' }} disabled class="text-blue-500"> Membaca
-                                        </label>
-                                    </div>
-                                </div>
-                                <div>
-                                    <p class="text-xs font-bold text-slate-800 mb-3">Salinan Informasi</p>
-                                    <div class="space-y-2 text-xs">
-                                        <label class="flex items-center gap-2">
-                                            <input type="radio" {{ $permohonan->jenis_salinan == 'softcopy' ? 'checked' : '' }} disabled class="text-blue-500"> Softcopy
-                                        </label>
-                                        <label class="flex items-center gap-2">
-                                            <input type="radio" {{ $permohonan->jenis_salinan == 'hardcopy' ? 'checked' : '' }} disabled class="text-blue-500"> Hardcopy
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {{-- Lampiran KTP --}}
-                    <div class="mt-8 border-t pt-8">
-                        <div class="max-w-xs mx-auto text-center">
-                            <div class="bg-slate-100 rounded-lg overflow-hidden border-2 border-dashed border-slate-200 p-2">
-                                <img src="https://via.placeholder.com/400x250" class="w-full object-cover rounded shadow-sm" alt="KTP">
-                            </div>
-                            <p class="text-[10px] font-bold text-slate-400 mt-2 uppercase tracking-widest">File KTP Pemohon</p>
-                        </div>
+            {{-- Kartu Rincian Permintaan --}}
+            <div class="bg-white rounded-[2.5rem] shadow-sm border border-slate-100 p-10">
+                <h3 class="text-lg font-black text-slate-800 mb-8 flex items-center gap-3">
+                    <span class="w-2 h-6 bg-blue-600 rounded-full"></span>
+                    Rincian Permohonan Informasi
+                </h3>
+                <div class="space-y-8">
+                    <div class="bg-slate-50 p-6 rounded-[1.5rem] text-slate-700 leading-relaxed font-medium border border-slate-100">
+                        {{ $permohonan->rincian_informasi }}
                     </div>
                 </div>
             </div>
         </div>
 
-        {{-- KOLOM KANAN: TINDAK LANJUT --}}
-        <div class="space-y-6">
-            {{-- Box Tindak Lanjut --}}
-            <div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
-                <div class="p-4 border-b border-slate-50 bg-slate-50/50">
-                    <h3 class="text-sm font-bold text-slate-700">Tindak Lanjut</h3>
-                </div>
-                <div class="p-6 space-y-3">
-                    <form action="/admin/permohonan/{{ $permohonan->id }}/update-status" method="POST" class="space-y-3">
-                        @csrf
-                        <div x-data="{ openPemberitahuan: false }">
-                            <button @click="openPemberitahuan = true" class="w-full bg-blue-600 text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-blue-700 transition shadow-lg shadow-blue-100">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                Pemberitahuan
+        {{-- KOLOM KANAN: LAMPIRAN & AKSI --}}
+        <div class="space-y-8">
+            
+            {{-- 1. Lampiran KTP (Sudah Dikembalikan) --}}
+            <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100">
+                <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6">Berkas Identitas</h3>
+                @if($permohonan->file_ktp)
+                    <a href="{{ asset('storage/' . $permohonan->file_ktp) }}" target="_blank" class="flex items-center gap-4 p-5 bg-slate-50 rounded-2xl hover:bg-blue-600 hover:text-white transition-all group border border-slate-100 shadow-sm">
+                        <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-sm text-blue-600 group-hover:scale-110 transition">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                        </div>
+                        <div>
+                            <p class="text-sm font-black uppercase tracking-tight">KTP Pemohon</p>
+                            <p class="text-[9px] font-bold uppercase opacity-60">Lihat Lampiran &rarr;</p>
+                        </div>
+                    </a>
+                @else
+                    <div class="p-6 bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200 text-center">
+                        <p class="text-[10px] text-slate-400 font-black uppercase italic tracking-widest">KTP Belum Diunggah</p>
+                    </div>
+                @endif
+            </div>
+
+            @php
+                // Definisikan status yang dianggap "Sudah Ditindaklanjuti"
+                $sudahDitindak = in_array(strtoupper($permohonan->status), ['DIPROSES', 'DITOLAK', 'TIDAK_LENGKAP', 'SELESAI']);
+            @endphp
+
+            {{-- Panel Tindak Lanjut --}}
+            <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100">
+                <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6">Panel Tindak Lanjut</h3>
+                
+                <div class="space-y-4">
+                    {{-- Tombol HANYA AKTIF jika status masih PENDING --}}
+                    @if(strtoupper($permohonan->status) == 'PENDING')
+                        <button @click="openPemberitahuan = true" 
+                            class="w-full py-4 bg-blue-600 text-white rounded-2xl font-black text-[11px] uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-100">
+                            Buat Pemberitahuan
+                        </button>
+                        
+                        <button @click="openTidakLengkap = true" 
+                            class="w-full py-4 bg-white border-2 border-slate-200 text-slate-600 rounded-2xl font-black text-[11px] uppercase tracking-widest hover:bg-slate-50 transition-all mt-4">
+                            Informasi Tidak Lengkap
+                        </button>
+                    @else
+                        {{-- Tampilan Tombol Terkunci (Disabled) --}}
+                        <div class="space-y-3">
+                            <button disabled class="w-full py-4 bg-slate-100 text-slate-400 border border-slate-200 rounded-2xl font-black text-[11px] uppercase tracking-widest cursor-not-allowed flex items-center justify-center gap-2 opacity-60">
+                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"/></svg>
+                                Pemberitahuan Terkirim
                             </button>
-
-                            {{-- MODAL DATA PEMBERITAHUAN TERTULIS --}}
-                            @include('public.partials.modal_pemberitahuan')
+                            
+                            <div class="p-4 bg-emerald-50 border border-emerald-100 rounded-2xl">
+                                <p class="text-[10px] font-bold text-emerald-700 text-center uppercase tracking-tight">
+                                    Aksi Terkunci: Permohonan telah diproses
+                                </p>
+                            </div>
                         </div>
-                        <button name="status" value="ditolak" class="w-full py-3 bg-red-600 text-white rounded-lg text-xs font-bold hover:bg-red-700 transition flex items-center justify-center gap-2">
-                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"/></svg>
-                            Tidak Lengkap
+                    @endif
+
+                    {{-- Garis Pembatas --}}
+                    <div class="relative py-4 flex items-center">
+                        <div class="flex-grow border-t border-slate-100"></div>
+                        <span class="flex-shrink mx-4 text-[9px] font-black text-slate-300 uppercase italic tracking-widest">Next Step</span>
+                        <div class="flex-grow border-t border-slate-100"></div>
+                    </div>
+
+                    {{-- Logika Tombol Upload Bukti (Hanya aktif jika sudah diproses) --}}
+                    @if(strtoupper($permohonan->status) == 'DIPROSES' && !$permohonan->file_penyelesaian)
+                        <button @click="openUploadSelesai = true" 
+                            class="w-full py-4 bg-slate-800 text-white rounded-2xl font-black text-[11px] uppercase tracking-widest hover:bg-black transition-all">
+                            + Upload Bukti Selesai
                         </button>
-                        <button name="status" value="selesai" class="w-full py-3 bg-slate-100 text-slate-500 rounded-lg text-xs font-bold hover:bg-slate-200 transition flex items-center justify-center gap-2">
-                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-                            Selesaikan Permohonan
+                    @else
+                        <button disabled class="w-full py-4 bg-slate-50 text-slate-300 border border-slate-100 rounded-2xl font-black text-[11px] uppercase tracking-widest cursor-not-allowed">
+                            Upload Terkunci
                         </button>
-                    </form>
+                    @endif
                 </div>
             </div>
 
-            {{-- Box Riwayat --}}
-            <div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
-                <div class="p-4 border-b border-slate-50 bg-slate-50/50">
-                    <h3 class="text-sm font-bold text-slate-700">Riwayat Permohonan</h3>
-                </div>
-                <div class="p-6">
-                    <div class="relative pl-8 border-l-2 border-emerald-500">
-                        <div class="absolute -left-[9px] top-0 w-4 h-4 bg-white border-2 border-emerald-500 rounded-full flex items-center justify-center">
-                            <span class="text-[8px] font-bold text-emerald-500">1</span>
+            {{-- 3. Arsip Dokumen Hasil --}}
+            <div class="bg-slate-50/50 p-8 rounded-[2.5rem] border border-slate-100">
+                <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6">Status Dokumen Keluar</h3>
+                <div class="space-y-4">
+                    @php
+                        $docs = [
+                            ['title' => 'Pemberitahuan Tertulis', 'status' => $permohonan->status, 'route' => ($permohonan->status == 'DITOLAK' || $permohonan->status == 'TIDAK_LENGKAP') ? route('admin.permohonan.cetak_penolakan', $permohonan->id) : route('admin.permohonan.cetak_pemberitahuan', $permohonan->id)],
+                            ['title' => 'Bukti Penyelesaian', 'file' => $permohonan->file_penyelesaian, 'route' => $permohonan->file_penyelesaian ? asset('storage/' . $permohonan->file_penyelesaian) : null],
+                        ];
+                    @endphp
+
+                    @foreach($docs as $doc)
+                        <div class="flex items-center justify-between p-4 bg-white rounded-2xl border border-slate-100 shadow-sm">
+                            <div class="flex items-center gap-3">
+                                <div class="p-2.5 {{ $permohonan->status != 'pending' ? 'bg-blue-50 text-blue-600' : 'bg-slate-50 text-slate-300' }} rounded-xl">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                </div>
+                                <div>
+                                    <p class="text-[10px] font-black text-slate-800 uppercase tracking-tight">{{ $doc['title'] }}</p>
+                                    <p class="text-[9px] font-bold {{ $permohonan->status != 'pending' ? 'text-emerald-500' : 'text-slate-400' }}">
+                                        {{ $permohonan->status != 'pending' ? 'Tersedia' : 'Pending' }}
+                                    </p>
+                                </div>
+                            </div>
+                            @if($permohonan->status != 'pending' && isset($doc['route']))
+                                <a href="{{ $doc['route'] }}" target="_blank" class="px-4 py-2 bg-slate-800 text-white text-[9px] font-black uppercase rounded-xl hover:bg-blue-600 transition-all shadow-sm">Lihat</a>
+                            @endif
                         </div>
-                        <p class="text-[11px] font-bold text-slate-800">{{ $permohonan->created_at->translatedFormat('l, d/M/Y - H:i') }} WIB</p>
-                        <p class="text-[10px] text-slate-500 mt-1">{{ $permohonan->nama }}</p>
-                        <p class="text-[10px] text-slate-400">Melakukan pengajuan permohonan informasi publik</p>
-                    </div>
+                    @endforeach
                 </div>
             </div>
         </div>
-
     </div>
-</section>
+
+    {{-- SEMUA MODAL TARUH DI BAWAH SINI --}}
+    @include('admin.permohonan.modal_pemberitahuan')
+    @include('admin.permohonan.modal_tidak_lengkap')
+    @include('admin.permohonan.modal_upload_selesai')
+
+</div>
 @endsection

@@ -37,6 +37,7 @@
                     <option value="berkala" {{ request('category') == 'berkala' ? 'selected' : '' }}>Berkala</option>
                     <option value="serta merta" {{ request('category') == 'serta merta' ? 'selected' : '' }}>Serta Merta</option>
                     <option value="setiap saat" {{ request('category') == 'setiap saat' ? 'selected' : '' }}>Setiap Saat</option>
+                    <option value="dikecualikan" {{ request('category') == 'dikecualikan' ? 'selected' : '' }}>Dikecualikan</option>
                 </select>
 
                 <button type="submit" class="bg-slate-900 text-white px-8 py-3 rounded-xl font-bold text-xs uppercase hover:bg-amber-500 transition-all">

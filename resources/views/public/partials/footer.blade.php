@@ -17,10 +17,13 @@
                 <p class="text-xs leading-relaxed opacity-80">
                     Layanan informasi publik yang transparan, cepat, dan akuntabel berdasarkan UU No. 14/2008 tentang Keterbukaan Informasi Publik.
                 </p>
-                <div class="inline-flex items-center gap-2 px-3 py-1 bg-slate-800 rounded-full border border-slate-700">
+                <a href="https://survei.beltim.go.id/view/SKM2207274439" target="_blank" 
+                class="inline-flex items-center gap-2 px-3 py-1 bg-slate-800 rounded-full border border-slate-700 hover:border-emerald-500 hover:bg-slate-700 transition-all group">
                     <div class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></div>
-                    <span class="text-[10px] font-bold text-slate-300 uppercase tracking-widest">Portal Resmi</span>
-                </div>
+                    <span class="text-[10px] font-bold text-slate-300 uppercase tracking-widest group-hover:text-emerald-400 transition-colors">
+                        Isi Survei Kepuasan (SKM)
+                    </span>
+                </a>
             </div>
 
             <div>

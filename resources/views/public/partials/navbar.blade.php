@@ -82,16 +82,21 @@
 
                     {{-- Link untuk Kategori Informasi --}}
                     <div class="px-6 py-2 text-[10px] font-black text-slate-400 uppercase tracking-widest">Kategori</div>
-                    <a href="{{ route('public.informasi.index', ['category' => 'berkala']) }}" class="block px-6 py-3 text-sm hover:bg-slate-50 hover:text-amber-600 transition-all font-bold">
-                        Informasi Berkala
-                    </a>
-                    <a href="{{ route('public.informasi.index', ['category' => 'setiap saat']) }}" class="block px-6 py-3 text-sm hover:bg-slate-50 hover:text-amber-600 transition-all font-bold">
-                        Informasi Setiap Saat
-                    </a>
-                    <a href="{{ route('public.informasi.index', ['category' => 'serta merta']) }}" class="block px-6 py-3 text-sm hover:bg-slate-50 hover:text-amber-600 transition-all font-bold">
-                        Informasi Serta Merta
-                    </a>
-                </div>
+                        
+                        <a href="{{ route('public.informasi.index', ['category' => 'berkala']) }}" class="block px-6 py-3 text-sm hover:bg-slate-50 hover:text-amber-600 transition-all font-bold">
+                            Informasi Berkala
+                        </a>
+                        <a href="{{ route('public.informasi.index', ['category' => 'setiap saat']) }}" class="block px-6 py-3 text-sm hover:bg-slate-50 hover:text-amber-600 transition-all font-bold">
+                            Informasi Setiap Saat
+                        </a>
+                        <a href="{{ route('public.informasi.index', ['category' => 'serta merta']) }}" class="block px-6 py-3 text-sm hover:bg-slate-50 hover:text-amber-600 transition-all font-bold">
+                            Informasi Serta Merta
+                        </a>
+                        <a href="{{ route('public.informasi.index', ['category' => 'dikecualikan']) }}" 
+                        class="block px-6 py-3 text-sm bg-blue-50/50 hover:bg-blue-50 hover:text-blue-600 transition-all font-black text-blue-700">
+                            Informasi Dikecualikan
+                        </a>
+                    </div>
             </div>
             
             <a href="/kontak" class="relative py-2 hover:text-amber-500 transition-colors group">
@@ -110,7 +115,7 @@
                         <span class="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
                     </span>
 
-                    PENGUMUMAN
+                    PENGUMUMAN & PROSEDUR
                 </a>
             </div>
         </nav>
@@ -128,6 +133,11 @@
                 <a href="{{ route('informasi.berkala') }}" class="py-1 hover:text-amber-600 text-[12px]">Berkala</a>
                 <a href="{{ route('informasi.setiap_saat') }}" class="py-1 hover:text-amber-600 text-[12px]">Setiap Saat</a>
                 <a href="{{ route('informasi.serta_merta') }}" class="py-1 hover:text-amber-600 text-[12px]">Serta Merta</a>
+                <a href="{{ route('public.informasi.index', ['category' => 'dikecualikan']) }}" 
+                class="py-2 mt-2 text-blue-600 font-black text-[12px] flex items-center gap-2">
+                    <span class="w-1.5 h-1.5 bg-blue-600 rounded-full"></span>
+                    Informasi Dikecualikan
+                </a>
             </div>
             
             <a href="/kontak" class="py-3 hover:text-amber-600">Kontak</a>

@@ -53,7 +53,11 @@ class PublicController extends Controller
     public function gallery()
     {
         $galleries = Gallery::where('is_active', true)->latest()->get();
-        return view('public.gallery', compact('galleries'));
+        
+        
+        $videos = Video::latest()->get(); 
+        
+        return view('public.gallery', compact('galleries', 'videos'));
     }
 
     public function prosedur()
@@ -92,10 +96,11 @@ class PublicController extends Controller
     public function index()
     {
         // 1. Ambil video utama untuk section panduan
-        $mainVideo = \App\Models\Video::latest()->first(); // Hapus 'where is_active'
+        // Kita cari yang is_main = true, kalau tidak ada ambil yang paling baru
+        $mainVideo = Video::where('is_main', true)->latest()->first();
 
         // 2. Ambil foto untuk section dokumentasi
-        $galleries = \App\Models\Gallery::where('is_active', true)->latest()->take(4)->get();
+        $galleries = Gallery::where('is_active', true)->latest()->take(4)->get();
 
         // 3. Ambil data slide slider (Hero)
         $slides = \App\Models\Hero::where('is_active', true)->orderBy('order')->get();
@@ -116,6 +121,24 @@ class PublicController extends Controller
         // Arahkan ke folder pages dan file terms-conditions
         return view('pages.terms-conditions', [
             'page_title' => 'Syarat & Ketentuan'
+        ]);
+    }
+
+    public function search(Request $request)
+    {
+        // Ambil input dari form beranda (name="keyword")
+        $keyword = $request->get('keyword');
+
+        // Gunakan kolom 'title' dan 'category' sesuai struktur public_informations
+        $results = \App\Models\PublicInformation::where('title', 'LIKE', "%$keyword%")
+                    ->orWhere('category', 'LIKE', "%$keyword%")
+                    ->latest()
+                    ->get();
+
+        // Sesuaikan variabel yang dikirim ('informations') dengan yang diminta di view
+        return view('public.informasi.index', [
+            'informations' => $results,
+            'keyword'      => $keyword
         ]);
     }
 }

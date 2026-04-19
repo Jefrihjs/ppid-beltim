@@ -40,7 +40,7 @@ class InformationManagerController extends Controller
     {
         $request->validate([
             'title' => 'required',
-            'category' => 'required',
+            'category' => 'required|in:berkala,setiap saat,serta merta,dikecualikan', // Tambah dikecualikan
             'opd_name' => 'required', 
         ]);
 

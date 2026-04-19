@@ -9,10 +9,16 @@ class Video extends Model
 {
     use HasFactory;
 
-    // Tambahkan baris ini untuk mengizinkan input data
     protected $fillable = [
         'title',
         'youtube_id',
-        'is_main'
+        'is_main',
+        'is_active' 
+    ];
+
+    
+    protected $casts = [
+        'is_main' => 'boolean',
+        'is_active' => 'boolean',
     ];
 }

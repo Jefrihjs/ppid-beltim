@@ -39,6 +39,10 @@ Route::prefix('informasi-publik')->group(function () {
     Route::get('/dip-serta-merta', [PublicController::class, 'dipSertaMerta'])->name('informasi.serta_merta');
 });
 
+Route::get('/informasi/uji-konsekuensi', function () {
+    return view('public.informasi.konsekuensi');
+})->name('informasi.konsekuensi');
+
 // Layanan
 Route::prefix('layanan')->name('layanan.')->group(function () {
     Route::get('/', fn() => view('public.layanan'))->name('index');
@@ -67,6 +71,7 @@ Route::post('/permohonan', [PermohonanController::class, 'store'])->name('permoh
 Route::get('/permohonan-sukses', fn() => view('public.permohonan_sukses'))->name('permohonan.sukses');
 
 // Monitoring
+Route:// Baris ke-64 di web.php kamu
 Route::get('/monitoring', [PermohonanController::class, 'monitoringForm'])->name('monitoring.form');
 Route::post('/monitoring', [PermohonanController::class, 'monitoringCheck'])->name('monitoring.check');
 
@@ -90,8 +95,11 @@ Route::prefix('profil')->name('profil.')->group(function () {
 Route::get('/syarat-ketentuan', [PublicController::class, 'termsConditions'])->name('terms.conditions');
 Route::get('/informasi-publik', [InformationController::class, 'index'])->name('public.informasi.index');
 Route::get('/informasi/{id}', [App\Http\Controllers\Public\InformationController::class, 'show'])->name('public.informasi.show');
+Route::get('/pencarian', [App\Http\Controllers\PublicController::class, 'search'])->name('public.search');
 // Rute untuk menghitung unduhan sebelum ke link asli
 Route::get('/informasi/download/{id}', [App\Http\Controllers\Public\InformationController::class, 'download'])->name('public.informasi.download');
+Route::get('/permohonan/cetak-bukti/{kode}', [PermohonanController::class, 'cetakBukti'])
+    ->name('permohonan.cetak_bukti');
 /*
 |--------------------------------------------------------------------------
 | ADMIN AREA (LOGIN REQUIRED)
@@ -100,35 +108,64 @@ Route::get('/informasi/download/{id}', [App\Http\Controllers\Public\InformationC
 
 Route::middleware('auth')
     ->prefix('admin')
-    ->name('admin.') // Nama route otomatis diawali 'admin.'
+    ->name('admin.') 
     ->group(function () {
 
     // Route Dashboard Utama
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    // Route Dashboard Utama (Hapus /admin di depannya)
+    Route::get('/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
     
-    // PENGATURAN HERO (Cukup Pakai Resource Ini Saja)
-    // Ini otomatis membuat route: admin.hero.index, admin.hero.create, admin.hero.store, dll.
-    Route::resource('hero', HeroController::class);
-    Route::resource('gallery', GalleryController::class);
-    Route::resource('video', VideoController::class);
-    Route::resource('announcement', AnnouncementController::class);
-
-    // Permohonan
+    // --- DROPDOWN LAYANAN PPID ---
+    // 1. Permohonan Informasi
     Route::get('/permohonan', [PermohonanController::class, 'index'])->name('permohonan.index');
     Route::get('/permohonan/{id}', [PermohonanController::class, 'show'])->name('permohonan.show');
+    Route::post('/permohonan/{id}/pemberitahuan', [PermohonanController::class, 'storePemberitahuan'])->name('permohonan.pemberitahuan');
     Route::post('/permohonan/{id}/update-status', [PermohonanController::class, 'updateStatus'])->name('permohonan.update');
+    Route::delete('/permohonan/{id}', [App\Http\Controllers\PermohonanController::class, 'destroy'])->name('permohonan.destroy');
     Route::get('/permohonan/cetak/laporan', [PermohonanController::class, 'cetakLaporan'])->name('permohonan.cetak');
+    Route::get('/laporan/cetak-semua', [App\Http\Controllers\Admin\LaporanController::class, 'cetakSemua'])->name('admin.laporan.cetak');
+    Route::get('/laporan/cetak', [App\Http\Controllers\Admin\LaporanController::class, 'cetakSemua'])->name('laporan.cetak');
+
+    // 2. Keberatan Informasi 
+    // Pastikan KeberatanController sudah dibuat
+    Route::get('/keberatan', [App\Http\Controllers\Admin\KeberatanController::class, 'index'])->name('keberatan.index');
+    Route::get('/keberatan/{id}', [PermohonanController::class, 'showKeberatan'])->name('keberatan.show');
+    Route::post('/permohonan/{id}/keberatan', [PermohonanController::class, 'storeKeberatan'])->name('permohonan.keberatan.store');
+
+    // 3. Laporan PPID 
+    Route::get('/laporan', [App\Http\Controllers\Admin\LaporanController::class, 'index'])->name('laporan.index');
+    
+
+    // --- AKHIR DROPDOWN ---
+
+    // Pengaturan Hero, Gallery, dll (Tetap)
+    Route::resource('hero', HeroController::class);
+    Route::resource('gallery', GalleryController::class);
+    Route::post('/gallery-video', [GalleryController::class, 'storeVideo'])->name('gallery.storeVideo');
+    Route::delete('/gallery-video/{video}', [GalleryController::class, 'destroyVideo'])->name('gallery.destroyVideo');
+    Route::resource('announcement', AnnouncementController::class);
+    Route::resource('informasi', InformationManagerController::class);
+    Route::resource('opd', App\Http\Controllers\Admin\OpdController::class)->only(['index', 'store', 'update']);
 
     // Pesan Kontak
     Route::get('/pesan', [ContactMessageController::class, 'index'])->name('pesan.index');
     Route::get('/pesan/{contactMessage}', [ContactMessageController::class, 'show'])->name('pesan.show');
 
-    // Route Resource untuk CRUD Informasi Publik
-    Route::resource('informasi', InformationManagerController::class);
+    // Route untuk menangani permohonan tidak lengkap
+    Route::post('/permohonan/{id}/tidak-lengkap', [App\Http\Controllers\PermohonanController::class, 'tidakLengkap'])
+        ->name('permohonan.tidak_lengkap');
 
-    Route::resource('opd', OpdController::class)->except(['destroy', 'show', 'create']);
+    // Route untuk Cetak PDF Pemberitahuan (Setuju & Tolak)
+    Route::get('/permohonan/{id}/cetak-pemberitahuan', [PermohonanController::class, 'cetakPemberitahuan'])->name('permohonan.cetak_pemberitahuan');
+    Route::get('/permohonan/{id}/cetak-penolakan', [PermohonanController::class, 'cetakPenolakan'])->name('permohonan.cetak_penolakan');
 
-    Route::resource('opd', App\Http\Controllers\Admin\OpdController::class)->only(['index', 'store', 'update']);
+    Route::post('/permohonan/{id}/upload-selesai', [PermohonanController::class, 'uploadSelesai'])
+    ->name('permohonan.upload_selesai');
+
+    Route::resource('categories', App\Http\Controllers\Admin\CategoryController::class);
+    Route::get('/visitors', [App\Http\Controllers\Admin\VisitorController::class, 'index'])->name('visitors.index');
+
+    Route::get('/visitors/pdf', [App\Http\Controllers\Admin\VisitorController::class, 'exportPdf'])->name('visitors.pdf');
 });
 
 /*

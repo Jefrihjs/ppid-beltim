@@ -73,15 +73,22 @@
 
     {{-- A. BAR PENCARIAN (SEARCH) --}}
     <div :class="scrolled ? 'translate-y-0 opacity-100' : 'translate-y-20 opacity-0'"
-         class="max-w-4xl mx-auto px-6 transition-all duration-700 ease-out transform">
+        class="max-w-4xl mx-auto px-6 transition-all duration-700 ease-out transform">
         
-        <div class="bg-white rounded-[2.5rem] p-2 shadow-2xl flex items-center border border-slate-100 shadow-blue-900/10">
+        {{-- Hubungkan ke route public.search --}}
+        <form action="{{ route('public.search') }}" method="GET" class="bg-white rounded-[2.5rem] p-2 shadow-2xl flex items-center border border-slate-100 shadow-blue-900/10">
             <div class="pl-6 text-blue-600">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
             </div>
-            <input type="text" placeholder="Cari informasi publik..." class="w-full border-none focus:ring-0 bg-transparent text-[10px] font-black uppercase tracking-widest p-4">
-            <button class="bg-blue-600 text-white px-10 py-4 rounded-full font-black uppercase text-[10px] tracking-widest hover:bg-slate-900 transition-all">CARI DATA</button>
-        </div>
+            
+            {{-- WAJIB: Tambahkan name="keyword" agar ditangkap Controller --}}
+            <input type="text" name="keyword" placeholder="Cari informasi publik (RKA, LAKIP, Profil)..." 
+                class="w-full border-none focus:ring-0 bg-transparent text-[10px] font-black uppercase tracking-widest p-4">
+                
+            <button type="submit" class="bg-blue-600 text-white px-10 py-4 rounded-full font-black uppercase text-[10px] tracking-widest hover:bg-slate-900 transition-all">
+                CARI DATA
+            </button>
+        </form>
     </div>
 
     {{-- B. GRID MENU LAYAR UTAMA --}}
