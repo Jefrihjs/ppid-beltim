@@ -150,6 +150,7 @@ Route::middleware('auth')
     // Pesan Kontak
     Route::get('/pesan', [ContactMessageController::class, 'index'])->name('pesan.index');
     Route::get('/pesan/{contactMessage}', [ContactMessageController::class, 'show'])->name('pesan.show');
+    Route::delete('/pesan/{id}', [ContactMessageController::class, 'destroy'])->name('pesan.destroy');
 
     // Route untuk menangani permohonan tidak lengkap
     Route::post('/permohonan/{id}/tidak-lengkap', [App\Http\Controllers\PermohonanController::class, 'tidakLengkap'])

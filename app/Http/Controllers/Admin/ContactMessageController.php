@@ -21,4 +21,12 @@ class ContactMessageController extends Controller
         }
         return view('admin.pesan.show', compact('contactMessage'));
     }
+
+    public function destroy($id)
+    {
+        $message = \App\Models\ContactMessage::findOrFail($id);
+        $message->delete();
+
+        return back()->with('success', 'Pesan spam berhasil dihapus!');
+    }
 }

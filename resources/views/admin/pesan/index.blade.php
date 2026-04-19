@@ -42,9 +42,23 @@
                             <p class="text-xs text-slate-500 max-w-xs truncate italic">"{{ $m->message }}"</p>
                         </td>
                         <td class="px-8 py-6 text-right">
-                            <a href="{{ route('admin.pesan.show', $m->id) }}" class="inline-flex items-center gap-2 bg-slate-900 text-white px-5 py-2.5 rounded-xl text-[10px] font-black hover:bg-amber-500 hover:text-slate-900 transition shadow-sm">
-                                BACA PESAN
-                            </a>
+                            <div class="flex items-center justify-end gap-2">
+                                {{-- Tombol Baca --}}
+                                <a href="{{ route('admin.pesan.show', $m->id) }}" class="inline-flex items-center gap-2 bg-slate-900 text-white px-5 py-2.5 rounded-xl text-[10px] font-black hover:bg-amber-500 hover:text-slate-900 transition shadow-sm">
+                                    BACA PESAN
+                                </a>
+
+                                {{-- Tombol Hapus (Spam) --}}
+                                <form action="{{ route('admin.pesan.destroy', $m->id) }}" method="POST" class="form-delete">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="button" class="btn-delete bg-red-50 text-red-500 p-2.5 rounded-xl hover:bg-red-500 hover:text-white transition-all shadow-sm">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                        </svg>
+                                    </button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                     @empty
@@ -64,4 +78,47 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.querySelectorAll('.btn-delete').forEach(button => {
+        button.addEventListener('click', function() {
+            const form = this.closest('.form-delete');
+            
+            Swal.fire({
+                title: 'Hapus Pesan?',
+                text: "Pesan yang dihapus (spam) tidak bisa dikembalikan!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444', // warna merah tailwind
+                cancelButtonColor: '#64748b', // warna slate tailwind
+                confirmButtonText: 'Ya, Hapus!',
+                cancelButtonText: 'Batal',
+                background: '#ffffff',
+                borderRadius: '2rem', // biar melengkung seperti desain Bapak
+                customClass: {
+                    title: 'font-black uppercase tracking-tight',
+                    confirmButton: 'rounded-xl font-bold uppercase text-xs px-6 py-3',
+                    cancelButton: 'rounded-xl font-bold uppercase text-xs px-6 py-3'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            })
+        });
+    });
+
+    // Notifikasi sukses (Jika ada session success)
+    @if(session('success'))
+        Swal.fire({
+            icon: 'success',
+            title: 'BERHASIL!',
+            text: "{{ session('success') }}",
+            showConfirmButton: false,
+            timer: 2000,
+            borderRadius: '2rem'
+        });
+    @endif
+</script>
 @endsection
+
