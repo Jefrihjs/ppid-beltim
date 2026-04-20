@@ -123,6 +123,22 @@
                 </a>
             </nav>
 
+            {{-- MENU KHUSUS SUPERADMIN --}}
+@if(auth()->user()->role === 'superadmin')
+    <div class="mt-6 pt-4 border-t border-slate-100">
+        <p class="text-[10px] font-black text-red-500 uppercase tracking-widest mb-4">Akses Superadmin</p>
+        <a href="{{ route('admin.users.index') }}" 
+           class="flex items-center gap-3 px-4 py-3 rounded-xl transition {{ request()->routeIs('admin.users.*') ? 'bg-red-600 text-white shadow-lg shadow-red-200' : 'text-slate-600 hover:bg-red-50 hover:text-red-600' }}">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
+            <span class="text-xs font-bold">Manajemen User</span>
+        </a>
+    </div>
+@endif
             <div class="mt-10 pt-6 border-t border-slate-100 pb-10">
                 <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Pengaturan</p>
                 <a href="{{ route('admin.hero.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl transition {{ request()->routeIs('admin.hero.*') ? 'bg-slate-900 text-white shadow-lg shadow-slate-200' : 'text-slate-600 hover:bg-slate-50' }}">

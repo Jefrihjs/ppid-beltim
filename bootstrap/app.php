@@ -12,12 +12,18 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         
-        // DAFTARKAN MIDDLEWARE VISITOR DI SINI
+        // Middleware yang berjalan di semua halaman web
         $middleware->web(append: [
             \App\Http\Middleware\TrackVisitor::class,
         ]);
 
-    }) // Pastikan ada kurung tutup ini
+        // DAFTARKAN ALIAS UNTUK CHECKROLE DI SINI
+        $middleware->alias([
+            'checkRole' => \App\Http\Middleware\CheckRole::class,
+        ]);
+
+    })
+    
     ->withExceptions(function (Exceptions $exceptions) {
         //
     })->create();
