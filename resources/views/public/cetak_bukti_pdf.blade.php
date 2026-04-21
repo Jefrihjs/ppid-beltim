@@ -56,8 +56,7 @@
         <table class="qr-section" cellspacing="0">
             <tr>
                 <td class="qr-box">
-                    {{-- Generate QR Code (Butuh library simpel-qrcode atau simpan sebagai image) --}}
-                    <img src="data:image/png;base64, {!! base64_encode(QrCode::format('png')->size(100)->generate($permohonan->kode_tracking)) !!} ">
+                    {!! QrCode::size(100)->generate($permohonan->kode_tracking) !!}
                 </td>
                 <td class="legal-text">
                     Dokumen ini sah, diterbitkan secara elektronik melalui sistem PPID Beltim sehingga tidak memerlukan cap dan tanda tangan basah. Terima kasih telah menyampaikan permohonan kebutuhan informasi kepada kami.<br><br>
