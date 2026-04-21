@@ -56,7 +56,11 @@
         <table class="qr-section" cellspacing="0">
             <tr>
                 <td class="qr-box">
-                    {!! QrCode::size(100)->generate($permohonan->kode_tracking) !!}
+                    {{-- Kita render ke SVG, lalu di-encode ke base64 agar dompdf bisa baca --}}
+                    @php
+                        $qrcode = base64_encode(QrCode::format('svg')->size(100)->errorCorrection('H')->generate($permohonan->kode_tracking));
+                    @endphp
+                    <img src="data:image/svg+xml;base64,{{ $qrcode }}" style="width: 100px; height: 100px;">
                 </td>
                 <td class="legal-text">
                     Dokumen ini sah, diterbitkan secara elektronik melalui sistem PPID Beltim sehingga tidak memerlukan cap dan tanda tangan basah. Terima kasih telah menyampaikan permohonan kebutuhan informasi kepada kami.<br><br>
