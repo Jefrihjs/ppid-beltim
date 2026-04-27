@@ -15,11 +15,27 @@
     </style>
 </head>
 <body>
-    {{-- Header / Kop Surat --}}
-    <div class="header">
-        <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('images/logo-beltim.png'))) }}" class="logo"><br>
-        <span style="font-size: 16px; font-weight: bold; display: block; margin-top: 10px;">Pejabat Pengelola Informasi dan Dokumentasi</span>
-        <span style="font-size: 20px; font-weight: bold;">PPID - BELTIM</span>
+    <div class="kop-surat" style="text-align: center; font-family: 'Times New Roman', serif; position: relative; margin-bottom: 20px; border-bottom: 3px double #000; padding-bottom: 10px;">
+    
+        {{-- Logo ditempatkan secara absolut agar teks kop tetap di tengah --}}
+        <img src="{{ public_path('images/logo-ppid-beltim.png') }}" 
+            style="position: absolute; left: 0; top: 30px; width: 80px; height: auto;">
+        
+        <div style="margin-left: 80px;"> {{-- Memberi ruang agar teks tidak tertutup logo --}}
+            <h3 style="margin: 0; font-size: 14pt; text-transform: uppercase; font-weight: normal; line-height: 1.2;">
+                Pemerintah Kabupaten Belitung Timur
+            </h3>
+            <h2 style="margin: 0; font-size: 14pt; text-transform: uppercase; font-weight: bold; line-height: 1.2;">
+                Pejabat Pengelola Informasi dan Dokumentasi
+            </h2>
+            
+            <p style="margin: 5px 0 0 0; font-size: 10pt; font-style: italic;">
+                Alamat: Komplek Perkantoran Terpadu Manggarawan, Belitung Timur, Bangka Belitung 33511
+            </p>
+            <p style="margin: 0; font-size: 10pt; font-style: italic;">
+                Email: ppid@beltim.go.id | Website: ppid.beltim.go.id
+            </p>
+        </div>
     </div>
 
     <div class="title">{{ $judul }}</div>
@@ -70,8 +86,17 @@
     {{-- Footer Box dengan QR Code --}}
     <table class="footer-box">
         <tr>
-            <td width="25%" style="text-align: center;">
-                <img src="data:image/png;base64,{{ base64_encode(QrCode::format('png')->size(100)->margin(0)->generate(url('/cek/'.$permohonan->kode_tracking))) }}" class="qr-code">
+            <td class="qr-box">
+                @php
+                    $qrLink = route('admin.permohonan.cetak_penolakan', $permohonan->id);
+                     
+                    $qrcode = base64_encode(QrCode::size(100)
+                                ->errorCorrection('H')
+                                ->generate($qrLink));
+                @endphp
+                
+                <img src="data:image/png;base64, {!! $qrcode !!}">
+                <p style="font-size: 8px; margin-top: 5px;">Scan untuk verifikasi dokumen</p>
             </td>
             <td width="75%" class="footer-text">
                 Dokumen ini sah, diterbitkan secara elektronik melalui sistem PPID Beltim sehingga tidak memerlukan cap dan tanda tangan basah. Terima kasih telah menyampaikan permohonan kebutuhan informasi kepada kami.<br><br>
@@ -82,12 +107,5 @@
         </tr>
     </table>
 
-    {{-- Watermark / Catatan Kaki --}}
-    <div style="margin-top: 60px; text-align: center; font-size: 9px; color: #777;">
-        Kompleks Perkantoran Terpadu<br>
-        Jalan Raya Manggar Gantung Desa Padang Kecamatan Manggar<br>
-        Situs : https://ppid.beltim.go.id<br>
-        <strong style="color: #000;">*Berkas ini dicetak pada hari {{ now()->translatedFormat('l, d F Y') }} melalui aplikasi PPID - Lawang Beltim</strong>
-    </div>
 </body>
 </html>

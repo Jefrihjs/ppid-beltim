@@ -17,16 +17,16 @@
                 @csrf
                 <div class="space-y-10">
                     
-                    {{-- AREA UPLOAD (Dibuat Lega & Klik-able) --}}
+                    {{-- AREA UPLOAD --}}
                     <div class="space-y-4">
                         <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Pilih Berkas Bukti (PDF/JPG)</label>
                         
                         <div class="relative h-48 w-full border-2 border-dashed border-slate-200 rounded-[2.5rem] bg-slate-50 hover:bg-slate-100 hover:border-blue-400 transition-all group">
-                            {{-- INPUT ASLI (Ditaruh paling atas/z-20 tapi transparan) --}}
+                            {{-- INPUT ASLI --}}
                             <input type="file" name="file_penyelesaian" required
                                    class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20">
                             
-                            {{-- TAMPILAN VISUAL (Di bawah input) --}}
+                            {{-- TAMPILAN VISUAL --}}
                             <div class="absolute inset-0 flex flex-col items-center justify-center z-10 pointer-events-none">
                                 <div class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-sm mb-4 group-hover:scale-110 transition-transform">
                                     <svg class="w-7 h-7 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -50,7 +50,7 @@
             </form>
         </div>
 
-        {{-- Footer (Tombol SIMPAN BUKTI yang diperbaiki) --}}
+        {{-- Footer --}}
         <div class="p-10 border-t border-slate-100 flex justify-end items-center gap-6 bg-slate-50/30">
             <button @click="openUploadSelesai = false" class="px-8 py-4 text-[11px] font-black uppercase text-slate-400 tracking-[0.2em] hover:text-slate-600 transition-colors">
                 Batal
